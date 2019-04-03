@@ -184,8 +184,12 @@ def transliterate(hrf, isend, prv, nxt):
         elif hrf[1] == 'r':
             if prv:
                 if len(prv) == 1:
-                    ltr += PASANGAN[hrf[0]]
-                    ltr += SANDHANGAN['cakra']
+                    if prv not in  ['h', 'r', 'y']:
+                        ltr += PASANGAN[hrf[0]]
+                        ltr += SANDHANGAN['cakra']
+                    else:
+                        ltr += HURUF[hrf[0]]    
+                        ltr += SANDHANGAN['cakra']
                 else:
                     ltr += HURUF[hrf[0]]
                     ltr += SANDHANGAN['cakra']
