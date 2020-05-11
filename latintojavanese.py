@@ -386,7 +386,7 @@ def translate(word):
                     ltr.append(word[i])
                     i = i + 1
         elif word[i] == 'g':
-            if 'g' in ltr[len(ltr)-1] and len(ltr[len(ltr)-1]) > 2:
+            if 'g' in ltr[len(ltr)-1] and len(ltr[len(ltr)-1]) >= 2:
                 pass
             else:
                 if len(word[i:]) > 1:
@@ -444,8 +444,12 @@ def translatethis(text):
 def dotranslate(word):
     trslt = []
     for wrds in word.split():
-        for wrd in wrds.split('-'):
-            trslt = trslt + translatethis(wrd.lower())
+        if '-' in wrds:
+            for wrd in wrds.split('-'):
+                trslt = trslt + translatethis(wrd.lower())
+        else:
+            trslt = trslt + translatethis(wrds.lower())
+
     return trslt
 
 
@@ -503,7 +507,7 @@ def dotransliterate(word):
                 prv = None
 
             litr += transliterate(lt, isend, prv, nxt)
-
+    print(ltr)
     return litr
 
 if __name__ == '__main__':
