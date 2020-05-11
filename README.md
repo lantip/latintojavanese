@@ -35,12 +35,14 @@ Instalasi
 Penggunaan
 ---
 Command line:
+
     $ cd latintojavanese
     $ python latintojavanese.py
     
     > masukkan kalimat di cursor input
 
 Web based:
+
     $ cd latintojavanese
     $ python app.py
     
