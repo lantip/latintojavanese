@@ -30,7 +30,9 @@ HURUF = {
     'g': 'ꦒ',
     'b': 'ꦧ',
     'th': 'ꦛ',
-    'ng': 'ꦔ'
+    'ng': 'ꦔ',
+    ',': '꧈',
+    '.': '꧉'
 }
 
 PASANGAN = {
@@ -163,16 +165,19 @@ def transliterate(hrf, isend, prv, nxt):
             else:
                 ltr += HURUF[hrf[0]]
     elif len(hrf) == 1:
-        if hrf == 'r':
-            ltr += SANDHANGAN['layar']
-        elif hrf == 'h':
-            ltr += SANDHANGAN['wignyan']
-        else:
-            if isend:
-                ltr += HURUF[hrf[0]]
-                ltr += SANDHANGAN['pangkon']
+        if hrf[0] not in [',', '.']:
+            if hrf == 'r':
+                ltr += SANDHANGAN['layar']
+            elif hrf == 'h':
+                ltr += SANDHANGAN['wignyan']
+            elif hrf == ',':
+                pass
             else:
-                ltr += HURUF[hrf[0]]
+                if isend:
+                    ltr += HURUF[hrf[0]]
+                    ltr += SANDHANGAN['pangkon']
+                else:
+                    ltr += HURUF[hrf[0]]
 
     elif len(hrf) > 2:
         if hrf[1] == 'l':
@@ -211,6 +216,8 @@ def transliterate(hrf, isend, prv, nxt):
         ltr += SANDHANGAN['wulu']
     if 'o' in hrf:
         ltr += SANDHANGAN['taling-tarung']
+    if nxt == '.':
+        ltr += HURUF[nxt]
     return ltr
 
 
@@ -400,6 +407,11 @@ def translate(word):
                     if (i-2) > 0:
                         if (word[i-2] + word[i-1]) == 'ng':
                             pass
+                        elif (word[i-1] + word[i]) == 'ng':
+                            pass
+                        else:
+                            ltr.append(word[i])
+                            i = i + 1
                     else:
                         ltr.append(word[i])
                         i = i + 1
@@ -420,30 +432,77 @@ def translate(word):
     return ltr
 
 
+def translatethis(text):
+    if ',' in text:
+        trslt = translate(text.replace(',','')) + [',']
+    elif '.' in text:
+        trslt = translate(text.replace(',','')) + ['.']
+    else:
+        trslt = translate(text)
+    return trslt
+
 def dotranslate(word):
     trslt = []
     for wrds in word.split():
         for wrd in wrds.split('-'):
-            trslt = trslt + translate(wrd.lower())
+            trslt = trslt + translatethis(wrd.lower())
     return trslt
 
 
 def dotransliterate(word):
-    ltr = dotranslate(word)
     litr = ''
-    isend = False
-    for index, lt in enumerate(ltr):
-        if index == len(ltr) - 1:
-            isend = True
-            nxt = None
-        else:
-            nxt = ltr[index+1]
-        if (index - 1) >= 0:
-            prv = ltr[index-1]
-        else:
-            prv = None
+    if '.' in word:
+        for ijk,wrd in enumerate(word.split('.')):
+            if ',' in wrd:
+                for idx,wr in enumerate(wrd.split(',')):
+                    ltr = dotranslate(wr)
+                    isend = False
+                    for index, lt in enumerate(ltr):
+                        if index == len(ltr) - 1:
+                            isend = True
+                            nxt = None
+                        else:
+                            nxt = ltr[index+1]
+                        if (index - 1) >= 0:
+                            prv = ltr[index-1]
+                        else:
+                            prv = None
 
-        litr += transliterate(lt, isend, prv, nxt)
+                        litr += transliterate(lt, isend, prv, nxt)
+                    if idx < (len(wrd.split(',')) - 1):
+                        litr += HURUF[',']
+            else:
+                ltr = dotranslate(wrd)
+                isend = False
+                for index, lt in enumerate(ltr):
+                    if index == len(ltr) - 1:
+                        isend = True
+                        nxt = None
+                    else:
+                        nxt = ltr[index+1]
+                    if (index - 1) >= 0:
+                        prv = ltr[index-1]
+                    else:
+                        prv = None
+
+                    litr += transliterate(lt, isend, prv, nxt)    
+            if ijk  < (len(word.split('.')) - 1):      
+                litr += HURUF['.']
+    else:
+        ltr = dotranslate(word)
+        isend = False
+        for index, lt in enumerate(ltr):
+            if index == len(ltr) - 1:
+                isend = True
+                nxt = None
+            else:
+                nxt = ltr[index+1]
+            if (index - 1) >= 0:
+                prv = ltr[index-1]
+            else:
+                prv = None
+
+            litr += transliterate(lt, isend, prv, nxt)
 
     return litr
 
