@@ -48,6 +48,13 @@ Web based:
     
     > buka  browser, http://127.0.0.1:5000/form
 
+Docker:
+
+    $ docker build -t <isiopoaejenenge> .
+    $ docker run -d -p 5000:5000 <isiopoaejenenge>
+
+    > buka  browser, http://127.0.0.1:5000/form
+
 
 
 Thanks To
